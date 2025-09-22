@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Penilaian Sumatif & Formatif SMP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+        .nav-link {
+            transition: all 0.2s ease-in-out;
+        }
+        .nav-link.active {
+            border-bottom-color: #4f46e5;
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-area, .print-area * {
+                visibility: visible;
+            }
+            .print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .no-print {
+                display: none;
+            }
+            table {
+                font-size: 10pt;
+                border-collapse: collapse !important;
+            }
+            th, td {
+                border: 1px solid #000 !important;
+                padding: 4px 6px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 md:p-8">
+        <header class="mb-6 text-center flex flex-col items-center no-print">
+            <img src="https://iili.io/KCRahbV.png" alt="Logo SMPN 295 Jakarta" class="h-24 w-24 mb-4">
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-700">INPUT DATA PENILAIAN SUMATIF DAN FORMATIF</h1>
+            <p class="text-gray-600 mt-1 font-semibold">SMP NEGERI 295 JAKARTA</p>
+            <p class="text-gray-500 mt-1">TAHUN AJARAN 2025 - 2026</p>
+        </header>
+
+        <!-- Navigasi -->
+        <nav class="bg-white rounded-lg shadow-md mb-6 p-2 flex justify-center flex-wrap gap-4 md:gap-8 no-print">
+            <a href="#beranda" class="nav-link border-b-2 border-transparent py-2 px-4 text-gray-600 hover:text-indigo-600">Beranda</a>
+            <a href="#master" class="nav-link border-b-2 border-transparent py-2 px-4 text-gray-600 hover:text-indigo-600">Data Master</a>
+            <a href="#formatif" class="nav-link border-b-2 border-transparent py-2 px-4 text-gray-600 hover:text-indigo-600">Input Nilai Formatif</a>
+            <a href="#sumatif" class="nav-link border-b-2 border-transparent py-2 px-4 text-gray-600 hover:text-indigo-600">Input Nilai Sumatif</a>
+        </nav>
+
+        <!-- Konten Halaman -->
+        <main id="app-content">
+            <!-- Halaman Beranda -->
+            <div id="page-beranda" class="text-center bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-gray-800">Selamat Datang di Aplikasi Penilaian</h2>
+                <p class="mt-2 text-gray-600">Silakan pilih menu di atas. Mulai dengan mengisi <b class="text-indigo-600">Data Master</b> terlebih dahulu.</p>
+            </div>
+
+            <!-- Halaman Data Master -->
+            <div id="page-master" class="hidden space-y-8">
+                <!-- Data Guru -->
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-indigo-700">Data Guru</h2>
+                        <button id="addGuruButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md flex items-center gap-2 mt-2 md:mt-0">Input Data Guru</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th class="px-6 py-3">Nama Guru</th><th class="px-6 py-3">Tugas Tambahan</th><th class="px-6 py-3">Kelas Wali</th><th class="px-6 py-3">Aksi</th></tr></thead>
+                            <tbody id="guruTableBody"></tbody>
+                        </table>
+                        <p id="no-data-guru" class="text-center py-4 text-gray-500 hidden">Belum ada data guru.</p>
+                    </div>
+                </div>
+                <!-- Data Murid -->
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                     <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-indigo-700">Data Murid</h2>
+                        <button id="addMuridButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md flex items-center gap-2 mt-2 md:mt-0">Input Data Murid</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-500">
+                             <thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th class="px-6 py-3">Nama Murid</th><th class="px-6 py-3">Kelas</th><th class="px-6 py-3">NIS</th><th class="px-6 py-3">NISN</th><th class="px-6 py-3">Aksi</th></tr></thead>
+                             <tbody id="muridTableBody"></tbody>
+                        </table>
+                         <p id="no-data-murid" class="text-center py-4 text-gray-500 hidden">Belum ada data murid.</p>
+                         <hr>
+                         <button class="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md flex items-center gap-2 no-print" onclick="exportLocalStorageToExcel()">Export to Excel</button>
+                         <br>
+                         <hr>
+                         <br>
+                         <input type="file" id="excelFileInput" accept=".xlsx, .xls">
+                         <button class="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md flex items-center gap-2 no-print" onclick="importExcel()">Import to LocalStorage</button>
+                         <div id="output"></div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Halaman Formatif -->
+            <div id="page-formatif" class="hidden">
+                <div class="bg-white p-4 rounded-lg shadow-md mb-6 flex flex-col md:flex-row gap-4 items-center justify-between no-print">
+                    <h2 class="text-xl font-bold text-indigo-700">Data Nilai Formatif</h2>
+                    <button id="addFormatifDataButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md flex items-center gap-2">Input Nilai Formatif</button>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md print-area" id="print-area-formatif">
+                    <div id="print-header-formatif" class="hidden my-4 text-center"><h2 class="text-xl font-bold">DAFTAR NILAI FORMATIF</h2></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-500">
+                             <thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th scope="col" class="px-6 py-3">No</th><th scope="col" class="px-6 py-3">Nama Murid</th><th scope="col" class="px-6 py-3">Kelas</th><th scope="col" class="px-6 py-3">Mapel</th><th scope="col" class="px-6 py-3 text-center">F1</th><th scope="col" class="px-6 py-3 text-center">F2</th><th scope="col" class="px-6 py-3 text-center">F3</th><th scope="col" class="px-6 py-3 text-center">F4</th><th scope="col" class="px-6 py-3 text-center bg-green-100">Rata-rata</th><th scope="col" class="px-6 py-3 text-center no-print">Aksi</th></tr></thead>
+                            <tbody id="formatifTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="no-data-formatif" class="text-center py-8 text-gray-500"><p>Belum ada data formatif.</p></div>
+                    <button id="printFormatifButton" class="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md flex items-center gap-2 no-print">Cetak Nilai Formatif</button>
+                    <button id="export-button" class="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md flex items-center gap-2 no-print">Export to Excel</button>
+                </div>
+            </div>
+
+            <!-- Halaman Sumatif -->
+            <div id="page-sumatif" class="hidden">
+                <div class="bg-white p-4 rounded-lg shadow-md mb-6 flex flex-col md:flex-row gap-4 items-center justify-between no-print">
+                    <div class="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+                        <div class="w-full md:w-48"><label for="filterKelas" class="block text-sm font-medium text-gray-700 mb-1">Filter Kelas</label><select id="filterKelas" class="w-full p-2 border border-gray-300 rounded-md shadow-sm"><option value="">Semua Kelas</option></select></div>
+                        <div class="w-full md:w-48"><label for="filterMapel" class="block text-sm font-medium text-gray-700 mb-1">Filter Mapel</label><input type="text" id="filterMapel" placeholder="Nama Mapel..." class="w-full p-2 border border-gray-300 rounded-md shadow-sm"></div>
+                    </div>
+                    <button id="addDataButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md flex items-center gap-2">Input Nilai Sumatif</button>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-md print-area" id="print-area-sumatif">
+                     <div id="print-header-sumatif" class="hidden my-4 text-center"><h2 class="text-xl font-bold">DAFTAR NILAI SUMATIF</h2><h3 id="print-header-mapel" class="text-lg font-semibold"></h3><h4 id="print-header-kelas" class="text-lg font-semibold"></h4></div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50"><tr><th scope="col" class="px-6 py-3">No</th><th scope="col" class="px-6 py-3">Nama Murid</th><th scope="col" class="px-6 py-3">Kelas</th><th scope="col" class="px-6 py-3">Mapel</th><th scope="col" class="px-6 py-3 text-center">Tugas</th><th scope="col" class="px-6 py-3 text-center">Formatif</th><th scope="col" class="px-6 py-3 text-center">PTS</th><th scope="col" class="px-6 py-3 text-center">PAS</th><th scope="col" class="px-6 py-3 text-center bg-indigo-100">Nilai Akhir</th><th scope="col" class="px-6 py-3 text-center bg-indigo-100">Predikat</th><th scope="col" class="px-6 py-3 text-center no-print">Aksi</th></tr></thead>
+                            <tbody id="dataTableBody"></tbody>
+                        </table>
+                    </div>
+                     <div id="no-data-message" class="text-center py-8 text-gray-500"><p>Belum ada data.</p></div>
+                    <button id="printSumatifButton" class="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md flex items-center gap-2 no-print">Cetak Nilai Sumatif</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODALS -->
+    <!-- Modal Input Guru -->
+    <div id="guruModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="modal-content bg-white w-full max-w-lg rounded-lg shadow-xl"><form id="guruForm" class="p-6"><input type="hidden" id="guruId"><h2 id="guruModalTitle" class="text-2xl font-bold mb-6 text-gray-700">Input Data Guru</h2><div class="space-y-4"><div><label for="namaGuru" class="block text-sm font-medium">Nama Guru</label><input type="text" id="namaGuru" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div><div><label for="tugasTambahan" class="block text-sm font-medium">Tugas Tambahan</label><input type="text" id="tugasTambahan" required class="mt-1 block w-full p-2 border rounded-md" value="wali Kelas"></div><div id="kelasWaliContainer" class="hidden"> <label for="kelasWali" class="block text-sm font-medium">Wali Kelas untuk</label><select id="kelasWali" class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></select></div></div><div class="mt-8 flex justify-end gap-3"><button type="button" class="cancel-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-md">Batal</button><button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md">Simpan</button></div></form></div>
+    </div>
+    <!-- Modal Input Murid -->
+    <div id="muridModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="modal-content bg-white w-full max-w-lg rounded-lg shadow-xl"><form id="muridForm" class="p-6"><input type="hidden" id="muridId"><h2 id="muridModalTitle" class="text-2xl font-bold mb-6 text-gray-700">Input Data Murid</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label for="muridNama" class="block text-sm font-medium">Nama Murid</label><input type="text" id="muridNama" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div><div><label for="muridKelas" class="block text-sm font-medium">Kelas</label><select id="muridKelas" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></select></div><div><label for="muridNis" class="block text-sm font-medium">NIS</label><input type="text" id="muridNis" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div><div><label for="muridNisn" class="block text-sm font-medium">NISN</label><input type="text" id="muridNisn" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md"></div></div><div class="mt-8 flex justify-end gap-3"><button type="button" class="cancel-btn bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-md">Batal</button><button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md">Simpan</button></div></form></div>
+    </div>
+    <!-- Modal Input Formatif -->
+    <div id="formatifModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="modal-content bg-white w-full max-w-2xl rounded-lg shadow-xl"><form id="formatifForm" class="p-6"><input type="hidden" id="formatifId"><h2 id="formatifModalTitle" class="text-2xl font-bold mb-6 text-gray-700">Input Data Nilai Formatif</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><div><label for="formatifKelas" class="block text-sm font-medium">Kelas</label><select id="formatifKelas" required class="mt-1 block w-full p-2 border rounded-md"></select></div><div><label for="formatifNamaMurid" class="block text-sm font-medium">Nama Murid</label><select id="formatifNamaMurid" required class="mt-1 block w-full p-2 border rounded-md"></select></div><div class="md:col-span-2"><label for="formatifMataPelajaran" class="block text-sm font-medium">Mata Pelajaran</label><input type="text" id="formatifMataPelajaran" required class="mt-1 block w-full p-2 border rounded-md" value="Informatika"></div></div><hr class="my-6"><h3 class="text-lg font-semibold mb-4">Input Nilai Formatif (1-4)</h3><div class="grid grid-cols-2 md:grid-cols-5 gap-4"><div><label for="f1">Formatif 1</label><input type="number" id="f1" min="0" max="100" class="mt-1 w-full p-2 border rounded-md"></div><div><label for="f2">Formatif 2</label><input type="number" id="f2" min="0" max="100" class="mt-1 w-full p-2 border rounded-md"></div><div><label for="f3">Formatif 3</label><input type="number" id="f3" min="0" max="100" class="mt-1 w-full p-2 border rounded-md"></div><div><label for="f4">Formatif 4</label><input type="number" id="f4" min="0" max="100" class="mt-1 w-full p-2 border rounded-md"></div><div><label for="formatifRataRata">Rata-rata</label><input type="text" id="formatifRataRata" readonly class="mt-1 w-full p-2 border rounded-md bg-gray-200"></div></div><div class="mt-8 flex justify-end gap-3"><button type="button" class="cancel-btn bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-md">Batal</button><button type="submit" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-md">Simpan</button></div></form></div>
+    </div>
+    <!-- Modal Input Sumatif -->
+    <div id="dataModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden z-50">
+        <div class="modal-content bg-white w-full max-w-2xl rounded-lg shadow-xl"><form id="dataForm" class="p-6"><input type="hidden" id="studentId"><h2 id="modalTitle" class="text-2xl font-bold mb-6">Input Data Nilai Sumatif</h2><div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><div><label for="kelas" class="block text-sm font-medium">Kelas</label><select id="kelas" required class="mt-1 w-full p-2 border rounded-md"></select></div><div><label for="namaMurid" class="block text-sm font-medium">Nama Murid</label><select id="namaMurid" required class="mt-1 w-full p-2 border rounded-md"></select></div><div><label for="waliKelas" class="block text-sm font-medium">Wali Kelas</label><input id="waliKelas" readonly class="mt-1 w-full p-2 border rounded-md bg-gray-200" placeholder="Otomatis dari kelas"></div><div><label for="guruMapel" class="block text-sm font-medium">Guru Mapel</label><select id="guruMapel" required class="mt-1 w-full p-2 border rounded-md"></select></div><div class="md:col-span-2"><label for="mataPelajaran" class="block text-sm font-medium">Mata Pelajaran</label><input type="text" id="mataPelajaran" required class="mt-1 w-full p-2 border rounded-md" value="Informatika"></div></div><hr class="my-6"><h3 class="text-lg font-semibold mb-4">Input Nilai</h3><div class="grid grid-cols-2 md:grid-cols-4 gap-4"><div><label>Tugas (20%)</label><input type="number" id="nilaiTugas" min="0" max="100" required class="mt-1 w-full p-2 border rounded-md"></div><div><label>Formatif (30%)</label><input type="number" id="nilaiFormatif" readonly class="mt-1 w-full p-2 border rounded-md bg-gray-200" placeholder="Otomatis"></div><div><label>PTS (25%)</label><input type="number" id="nilaiPts" min="0" max="100" required class="mt-1 w-full p-2 border rounded-md"></div><div><label>PAS (25%)</label><input type="number" id="nilaiPas" min="0" max="100" required class="mt-1 w-full p-2 border rounded-md"></div></div><div class="mt-8 flex justify-end gap-3"><button type="button" class="cancel-btn bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-md">Batal</button><button type="submit" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-md">Simpan</button></div></form></div>
+    </div>
+
+    <script src="script.js" defer></script>
+    <script src="xlsx.full.min.js" defer></script>
+    <script src="export.xlsx.js" defer></script>
+    <script src="import.xlsx.js" defer></script>
+
+
+</body>
+</html>
